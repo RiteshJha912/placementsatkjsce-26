@@ -303,17 +303,132 @@ footer{ border-top:1px solid var(--line); padding:20px 28px; max-width:1400px; m
 
 /* ===================== RESPONSIVE ===================== */
 @media (max-width:720px){
-  main{ padding:0 16px 60px; }
-  .topbar-inner{ padding:12px 16px; }
-  .nav{ padding:0 16px; overflow-x:auto; }
+  body{ font-size:14.5px; }
+  main{ padding:0 14px 60px; }
+  .topbar-inner{ padding:10px 14px; }
+  .brand{ gap:8px; }
+  .brand-name{ font-size:13.5px; line-height:1.25; }
+  .brand-sub{ display:none; }
+  .nav{ padding:0 14px; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+  .nav::-webkit-scrollbar{ display:none; }
+  .nav-item{ padding:12px 13px 10px; font-size:11.5px; }
   .topbar-meta{ display:none; }
-  .grid2 > div{ padding:16px; }
-  .detail-stats{ gap:16px; }
+  .grid2 > div{ padding:14px; }
+  .detail-stats{ gap:14px 22px; }
   .announcement-head{ flex-direction:column; align-items:flex-start; gap:4px; }
+  .section{ padding-top:28px; }
+  .section + .section{ margin-top:28px; }
+  .section-head{ margin-bottom:12px; }
+  .hero{ padding-top:24px; }
+  .hero-sub{ margin-bottom:20px; }
+
+  /* single-column stat / insight grids so cards have room to breathe */
+  .statgrid{ grid-template-columns:1fr 1fr; }
+  .insight-grid{ grid-template-columns:1fr 1fr; }
+  .stat{ padding:14px 14px 12px; }
+
+  /* controls stack full-width and get bigger touch targets */
+  .controls{ gap:8px; }
+  .search-box{ min-width:0; width:100%; }
+  .search-box input{ padding:12px 12px 12px 34px; font-size:16px; } /* 16px avoids iOS auto-zoom */
+  select.filter{ flex:1; padding:11px 10px; }
+  .chip-row{ width:100%; overflow-x:auto; flex-wrap:nowrap; -webkit-overflow-scrolling:touch; padding-bottom:2px; }
+  .chip-row::-webkit-scrollbar{ display:none; }
+  .chip{ white-space:nowrap; padding:9px 13px; }
+  .result-count{ width:100%; text-align:left; }
+
+  /* event rows (timeline) collapse into two lines instead of a cramped 4-col grid */
+  .event-row{
+    grid-template-columns:1fr auto;
+    grid-template-areas:"date cum" "company hired";
+    row-gap:4px; padding:12px 14px;
+  }
+  .event-date{ grid-area:date; }
+  .event-cum{ grid-area:cum; }
+  .event-company{ grid-area:company; }
+  .event-hired{ grid-area:hired; text-align:right; }
+
+  .branch-chip{ min-width:0; flex:1 1 calc(50% - 8px); padding:11px 12px; }
+  .role-chip{ padding:10px 12px; }
+
+  /* donut: stack chart above legend and let the legend take the full
+     width — the old side-by-side flex layout squeezed the legend into a
+     ~90px sliver, which overflowed the page horizontally */
+  .donut-wrap{ flex-direction:column; align-items:flex-start; gap:16px; }
+  .donut-svg-wrap{ align-self:center; }
+  .donut-legend{ width:100%; min-width:0; flex-basis:auto; }
+  .donut-legend-row{ align-items:flex-start; }
+  .donut-legend-label{ overflow-wrap:break-word; }
+  .donut-legend-val{ flex-shrink:0; }
+}
+
+@media (max-width:460px){
+  .statgrid{ grid-template-columns:1fr; }
+  .insight-grid{ grid-template-columns:1fr; }
+}
+
+/* ===================== MOBILE TABLE → CARD LAYOUT ===================== */
+/* Below 720px, data tables stop scrolling sideways and instead stack each
+   row into a labelled card — every field gets a visible label + value. */
+@media (max-width:720px){
+  .table-wrap{ overflow-x:visible; border:none; background:transparent; }
+  .table-wrap table{ min-width:0; width:100%; border-collapse:separate; border-spacing:0; }
+
+  table.card-table thead{ display:none; }
+  table.card-table tbody{ display:block; }
+  table.card-table tbody tr{
+    display:flex;
+    flex-direction:column;
+    background:var(--surface);
+    border:1px solid var(--line);
+    margin-bottom:10px;
+    position:relative;
+  }
+  table.card-table tbody tr.clickable::after{
+    content:'→'; position:absolute; top:12px; right:14px;
+    font-family:var(--font-mono); font-size:13px; color:var(--ink-faint);
+  }
+  table.card-table tbody tr:last-child{ margin-bottom:0; }
+  table.card-table tbody td{
+    display:flex; justify-content:space-between; align-items:baseline; gap:14px;
+    padding:9px 14px; border-bottom:1px solid var(--line-faint);
+    text-align:right; font-size:13px;
+  }
+  table.card-table tbody td:last-child{ border-bottom:none; }
+  table.card-table tbody td::before{
+    content:attr(data-label);
+    font-size:10px; text-transform:uppercase; letter-spacing:0.06em;
+    color:var(--ink-soft); font-weight:600; text-align:left; flex-shrink:0;
+  }
+  /* the row's primary identifier becomes a prominent card header, no label —
+     `order` promotes it to the top of the card regardless of its column
+     position in the (unchanged, desktop-correct) table markup */
+  table.card-table tbody td.card-title{
+    order:-1;
+    display:block; text-align:left; font-size:15px; font-weight:700;
+    background:var(--accent-soft); border-bottom:1px solid var(--line);
+    padding:12px 40px 12px 14px;
+  }
+  table.card-table tbody td.card-title::before{ content:none; }
+  /* empty-state / colspan rows render as plain blocks, not label rows */
+  table.card-table tbody td[colspan]{ display:block; text-align:left; padding:0; }
+  table.card-table tbody td[colspan]::before{ content:none; }
+  table.card-table tbody tr:has(td[colspan]){ border:none; background:transparent; }
 }
 
 .hidden{ display:none !important; }
 </style>
+
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-22E0D5TNSY"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() { dataLayer.push(arguments); }
+  gtag('js', new Date());
+
+  gtag('config', 'G-22E0D5TNSY');
+</script>
+
 </head>
 <body>
 <div id="app">
@@ -691,19 +806,19 @@ const RAW_DATA = {"metadata": {"source_document": "all_placements_26_batch.pdf +
           <div class="section-note">Latest 10 results</div>
         </div>
         <div class="table-wrap">
-          <table>
+          <table class="card-table">
             <thead><tr>
               <th>Date</th><th>Company</th><th>Type</th><th>Role(s)</th><th class="num">CTC</th><th class="num">Hired</th>
             </tr></thead>
             <tbody>
               ${recent.map(p => `
                 <tr class="clickable" onclick="location.hash='#company/${encodeURIComponent(p.company.normalized_name)}'">
-                  <td class="mono">${fmtDateShort(p.result.declared_date)}</td>
-                  <td class="cell-strong">${p.company.name}</td>
-                  <td>${typeTag(p.company.type)}</td>
-                  <td>${p.roles.join(" / ")}</td>
-                  <td class="num mono">${ctcLabelShort(p)!=="—" ? ctcLabelShort(p)+"L" : ctcLabel(p)}</td>
-                  <td class="num mono">${p.hiring.students_hired}</td>
+                  <td class="mono" data-label="Date">${fmtDateShort(p.result.declared_date)}</td>
+                  <td class="cell-strong card-title">${p.company.name}</td>
+                  <td data-label="Type">${typeTag(p.company.type)}</td>
+                  <td data-label="Role(s)">${p.roles.join(" / ")}</td>
+                  <td class="num mono" data-label="CTC">${ctcLabelShort(p)!=="—" ? ctcLabelShort(p)+"L" : ctcLabel(p)}</td>
+                  <td class="num mono" data-label="Hired">${p.hiring.students_hired}</td>
                 </tr>`).join("")}
             </tbody>
           </table>
@@ -755,7 +870,7 @@ const RAW_DATA = {"metadata": {"source_document": "all_placements_26_batch.pdf +
           <div class="result-count" id="co-count"></div>
         </div>
         <div class="table-wrap">
-          <table>
+          <table class="card-table">
             <thead><tr>
               <th class="sortable" data-col="name">Company</th>
               <th>Type</th>
@@ -831,13 +946,13 @@ const RAW_DATA = {"metadata": {"source_document": "all_placements_26_batch.pdf +
     }
     tbody.innerHTML = rows.map(c => `
       <tr class="clickable" onclick="location.hash='#company/${encodeURIComponent(c.key)}'">
-        <td class="cell-strong">${c.name}</td>
-        <td>${typeTag(c.type)}</td>
-        <td class="num mono">${c.highestCtc !== null ? c.highestCtc.toFixed(2)+"L" : "—"}</td>
-        <td class="num mono">${c.totalHired}</td>
-        <td>${Array.from(c.roles).slice(0,2).join(", ")}${c.roles.size>2?` <span class="cell-sub">+${c.roles.size-2} more</span>`:""}</td>
-        <td class="mono">${fmtDateShort(c.lastDate)}</td>
-        <td class="num mono">${c.announcements.length}</td>
+        <td class="cell-strong card-title">${c.name}</td>
+        <td data-label="Type">${typeTag(c.type)}</td>
+        <td class="num mono" data-label="Highest CTC">${c.highestCtc !== null ? c.highestCtc.toFixed(2)+"L" : "—"}</td>
+        <td class="num mono" data-label="Students Hired">${c.totalHired}</td>
+        <td data-label="Roles">${Array.from(c.roles).slice(0,2).join(", ")}${c.roles.size>2?` <span class="cell-sub">+${c.roles.size-2} more</span>`:""}</td>
+        <td class="mono" data-label="Latest Result">${fmtDateShort(c.lastDate)}</td>
+        <td class="num mono" data-label="Announcements">${c.announcements.length}</td>
       </tr>`).join("");
   }
 
@@ -885,15 +1000,15 @@ const RAW_DATA = {"metadata": {"source_document": "all_placements_26_batch.pdf +
             </div>
             ${p.notes ? `<div class="note-flag">⚑ NOTE: ${p.notes}</div>` : ""}
             <div class="table-wrap" style="border:none;">
-              <table>
+              <table class="card-table">
                 <thead><tr><th>Candidate</th><th>Roll No.</th><th>Branch</th><th>Role</th></tr></thead>
                 <tbody>
                   ${p.candidates.map(cd => `
                     <tr>
-                      <td class="cell-strong">${cd.name}</td>
-                      <td class="mono">${cd.roll_number}</td>
-                      <td>${typeTag(cd.branch)}</td>
-                      <td>${cd.role}</td>
+                      <td class="cell-strong card-title">${cd.name}</td>
+                      <td class="mono" data-label="Roll No.">${cd.roll_number}</td>
+                      <td data-label="Branch">${typeTag(cd.branch)}</td>
+                      <td data-label="Role">${cd.role}</td>
                     </tr>`).join("")}
                 </tbody>
               </table>
@@ -923,7 +1038,7 @@ const RAW_DATA = {"metadata": {"source_document": "all_placements_26_batch.pdf +
         </div>
 
         <div class="table-wrap">
-          <table>
+          <table class="card-table">
             <thead><tr>
               <th>Branch</th>
               <th class="num">Selections</th>
@@ -939,16 +1054,16 @@ const RAW_DATA = {"metadata": {"source_document": "all_placements_26_batch.pdf +
             <tbody>
               ${BRANCH_DATA.map(bd => `
                 <tr class="clickable" onclick="location.hash='#branches/${encodeURIComponent(bd.branch)}'">
-                  <td class="cell-strong">${bd.branch}</td>
-                  <td class="num mono">${bd.selections}</td>
-                  <td class="num mono">${bd.uniqueStudents}</td>
-                  <td class="num mono">${bd.pctOfTotal.toFixed(1)}%</td>
-                  <td class="num mono">${bd.companiesCount}</td>
-                  <td class="num mono">${bd.avgCtc !== null ? "₹"+bd.avgCtc.toFixed(2)+"L" : "—"}</td>
-                  <td class="num mono">${bd.medianCtc !== null ? "₹"+bd.medianCtc.toFixed(2)+"L" : "—"}</td>
-                  <td class="num mono">${bd.highestCtc !== null ? "₹"+bd.highestCtc.toFixed(2)+"L" : "—"}</td>
-                  <td>${bd.companyRanking[0][0]} <span class="cell-sub">(${bd.companyRanking[0][1]})</span></td>
-                  <td>${bd.roleRanking[0][0]}</td>
+                  <td class="cell-strong card-title">${bd.branch}</td>
+                  <td class="num mono" data-label="Selections">${bd.selections}</td>
+                  <td class="num mono" data-label="Unique Students">${bd.uniqueStudents}</td>
+                  <td class="num mono" data-label="% of Total">${bd.pctOfTotal.toFixed(1)}%</td>
+                  <td class="num mono" data-label="Companies">${bd.companiesCount}</td>
+                  <td class="num mono" data-label="Avg CTC">${bd.avgCtc !== null ? "₹"+bd.avgCtc.toFixed(2)+"L" : "—"}</td>
+                  <td class="num mono" data-label="Median CTC">${bd.medianCtc !== null ? "₹"+bd.medianCtc.toFixed(2)+"L" : "—"}</td>
+                  <td class="num mono" data-label="Highest CTC">${bd.highestCtc !== null ? "₹"+bd.highestCtc.toFixed(2)+"L" : "—"}</td>
+                  <td data-label="Top Hiring Company">${bd.companyRanking[0][0]} <span class="cell-sub">(${bd.companyRanking[0][1]})</span></td>
+                  <td data-label="Top Role">${bd.roleRanking[0][0]}</td>
                 </tr>`).join("")}
             </tbody>
           </table>
@@ -1031,17 +1146,17 @@ const RAW_DATA = {"metadata": {"source_document": "all_placements_26_batch.pdf +
           <div class="section-note">${b.candidates.length} records</div>
         </div>
         <div class="table-wrap">
-          <table>
+          <table class="card-table">
             <thead><tr><th>Candidate</th><th>Roll No.</th><th>Company</th><th>Role</th><th class="num">CTC</th><th>Date</th></tr></thead>
             <tbody>
               ${[...b.candidates].sort((x,y)=>y.date.localeCompare(x.date)).map(c => `
                 <tr class="clickable" onclick="location.hash='#company/${encodeURIComponent(c.companyKey)}'">
-                  <td class="cell-strong">${c.name}</td>
-                  <td class="mono">${c.roll}</td>
-                  <td>${c.company}</td>
-                  <td>${c.role}</td>
-                  <td class="num mono">${c.ctcDisplay}</td>
-                  <td class="mono">${fmtDateShort(c.date)}</td>
+                  <td class="cell-strong card-title">${c.name}</td>
+                  <td class="mono" data-label="Roll No.">${c.roll}</td>
+                  <td data-label="Company">${c.company}</td>
+                  <td data-label="Role">${c.role}</td>
+                  <td class="num mono" data-label="CTC">${c.ctcDisplay}</td>
+                  <td class="mono" data-label="Date">${fmtDateShort(c.date)}</td>
                 </tr>`).join("")}
             </tbody>
           </table>
@@ -1087,7 +1202,7 @@ const RAW_DATA = {"metadata": {"source_document": "all_placements_26_batch.pdf +
           <div class="result-count" id="ca-count"></div>
         </div>
         <div class="table-wrap">
-          <table>
+          <table class="card-table">
             <thead><tr>
               <th>Candidate</th><th>Roll No.</th><th>Branch</th><th>Company</th><th>Role</th><th class="num">CTC</th><th>Date</th>
             </tr></thead>
@@ -1134,13 +1249,13 @@ const RAW_DATA = {"metadata": {"source_document": "all_placements_26_batch.pdf +
     const display = rows.slice(0, 500);
     tbody.innerHTML = display.map(c => `
       <tr class="clickable" onclick="location.hash='#company/${encodeURIComponent(c.companyKey)}'">
-        <td class="cell-strong">${c.name}</td>
-        <td class="mono">${c.roll}</td>
-        <td>${typeTag(c.branch)}</td>
-        <td>${c.company}</td>
-        <td>${c.role}</td>
-        <td class="num mono">${c.ctcDisplay.replace("₹","").replace("L","L")}</td>
-        <td class="mono">${fmtDateShort(c.date)}</td>
+        <td class="cell-strong card-title">${c.name}</td>
+        <td class="mono" data-label="Roll No.">${c.roll}</td>
+        <td data-label="Branch">${typeTag(c.branch)}</td>
+        <td data-label="Company">${c.company}</td>
+        <td data-label="Role">${c.role}</td>
+        <td class="num mono" data-label="CTC">${c.ctcDisplay.replace("₹","").replace("L","L")}</td>
+        <td class="mono" data-label="Date">${fmtDateShort(c.date)}</td>
       </tr>`).join("");
   }
 
@@ -1257,14 +1372,42 @@ const RAW_DATA = {"metadata": {"source_document": "all_placements_26_batch.pdf +
     const gap = 10;
     const barW = (innerW - gap*(entries.length-1)) / entries.length;
 
+    // thin out x-axis labels (not bars) when there isn't enough width per
+    // bar to fit a label without it colliding with its neighbours — uses
+    // actual pixel distance (not just index-skipping) so the last label
+    // never collides with whichever one was shown right before it
+    const isMobile = width < 480;
+    const minGapPx = isMobile ? 34 : 30;
+    const centers = entries.map((e,i) => padding.left + i*(barW+gap) + barW/2);
+    const showIdx = new Set();
+    if(centers.length){
+      showIdx.add(0);
+      let lastShownX = centers[0];
+      for(let i=1;i<centers.length;i++){
+        if(centers[i] - lastShownX >= minGapPx){ showIdx.add(i); lastShownX = centers[i]; }
+      }
+      const lastI = centers.length-1;
+      if(!showIdx.has(lastI)){
+        if(centers[lastI] - lastShownX < minGapPx){
+          // swap out whichever earlier label is too close, keep the last one
+          let toRemove = null;
+          showIdx.forEach(i => { if(i !== 0) toRemove = i; });
+          if(toRemove !== null) showIdx.delete(toRemove);
+        }
+        showIdx.add(lastI);
+      }
+    }
+    const fontSize = isMobile ? 9 : 10;
+
     const bars = entries.map((e,i) => {
       const h = (e[1]/maxVal) * innerH;
       const x = padding.left + i*(barW+gap);
       const y = padding.top + innerH - h;
+      const showLabel = showIdx.has(i);
       return `
         <rect data-i="${i}" x="${x}" y="${y}" width="${barW}" height="${h}" fill="var(--accent)" class="col-bar" style="cursor:pointer;"/>
-        <text x="${x+barW/2}" y="${padding.top+innerH+16}" text-anchor="middle" font-family="var(--font-mono)" font-size="10" fill="var(--ink-soft)">${e[0]}</text>
-        <text x="${x+barW/2}" y="${y-6}" text-anchor="middle" font-family="var(--font-mono)" font-size="10.5" font-weight="700" fill="var(--ink)">${e[1]}</text>
+        ${showLabel ? `<text x="${x+barW/2}" y="${padding.top+innerH+16}" text-anchor="middle" font-family="var(--font-mono)" font-size="${fontSize}" fill="var(--ink-soft)">${e[0]}</text>` : ""}
+        ${!isMobile || barW > 22 ? `<text x="${x+barW/2}" y="${y-6}" text-anchor="middle" font-family="var(--font-mono)" font-size="${isMobile?9:10.5}" font-weight="700" fill="var(--ink)">${e[1]}</text>` : ""}
       `;
     }).join("");
 
@@ -1310,19 +1453,45 @@ const RAW_DATA = {"metadata": {"source_document": "all_placements_26_batch.pdf +
       gridLines += `<line x1="${padding.left}" y1="${yy}" x2="${width-padding.right}" y2="${yy}" stroke="var(--line-faint)" stroke-width="1"/>`;
       yLabels += `<text x="${padding.left-8}" y="${yy+3}" font-size="10" font-family="var(--font-mono)" fill="var(--ink-soft)" text-anchor="end">${val}</text>`;
     }
-    // x labels (month markers)
-    let xLabels = "";
+    // x labels (month markers) — thin them out to fit the available width so
+    // labels never overlap on narrow (phone) screens
+    const monthTicks = [];
     const monthsSeen = new Set();
     data.forEach(d => {
       const ym = d.date.slice(0,7);
       if(!monthsSeen.has(ym)){
         monthsSeen.add(ym);
-        const xx = x(d);
         const dt = new Date(d.date+"T00:00:00");
         const lbl = dt.toLocaleString("en-US",{month:"short"}) + " " + dt.getFullYear().toString().slice(2);
-        xLabels += `<text x="${xx}" y="${height-8}" font-size="10" font-family="var(--font-mono)" fill="var(--ink-soft)" text-anchor="start">${lbl}</text>`;
-        xLabels += `<line x1="${xx}" y1="${padding.top}" x2="${xx}" y2="${padding.top+innerH}" stroke="var(--line-faint)" stroke-width="1" stroke-dasharray="2,3"/>`;
+        monthTicks.push({ x: x(d), lbl });
       }
+    });
+    const isMobile = width < 480;
+    const minGapPx = isMobile ? 46 : 56; // min pixel distance between two labels' anchor points
+    // greedily select ticks left→right that are far enough apart, then make
+    // sure the very last tick (most recent date) is always shown — swapping
+    // out the previous pick if it would otherwise sit too close to it
+    const selected = monthTicks.length ? [0] : [];
+    for(let i=1;i<monthTicks.length;i++){
+      if(monthTicks[i].x - monthTicks[selected[selected.length-1]].x >= minGapPx) selected.push(i);
+    }
+    const lastIdx = monthTicks.length - 1;
+    if(selected[selected.length-1] !== lastIdx){
+      if(monthTicks[lastIdx].x - monthTicks[selected[selected.length-1]].x < minGapPx && selected.length > 1){
+        selected[selected.length-1] = lastIdx;
+      } else {
+        selected.push(lastIdx);
+      }
+    }
+    let xLabels = "";
+    const fontSize = isMobile ? 9 : 10;
+    selected.forEach((idx,pos) => {
+      const t = monthTicks[idx];
+      let anchor = "middle";
+      if(pos === 0) anchor = "start";
+      else if(pos === selected.length-1) anchor = "end";
+      xLabels += `<text x="${t.x}" y="${height-8}" font-size="${fontSize}" font-family="var(--font-mono)" fill="var(--ink-soft)" text-anchor="${anchor}">${t.lbl}</text>`;
+      xLabels += `<line x1="${t.x}" y1="${padding.top}" x2="${t.x}" y2="${padding.top+innerH}" stroke="var(--line-faint)" stroke-width="1" stroke-dasharray="2,3"/>`;
     });
 
     const dots = data.map((d,i) => `<circle data-i="${i}" cx="${x(d)}" cy="${y(d.cumulative)}" r="3.2" fill="var(--accent)" stroke="var(--surface)" stroke-width="1.2" class="chart-dot" style="cursor:pointer;"/>`).join("");
