@@ -417,6 +417,22 @@ footer{ border-top:1px solid var(--line); padding:20px 28px; max-width:1400px; m
 }
 
 .hidden{ display:none !important; }
+
+/* Show/hide helpers for trimming long per-row detail lists on small
+   screens (e.g. the branch page's full candidate roster), where every
+   table row becomes a stacked card and the page gets very long. */
+.mobile-only{ display:none; }
+.branch-candidates-cta{
+  display:none; align-items:center; justify-content:space-between; gap:12px;
+  padding:14px 16px; background:var(--surface); border:1px solid var(--line);
+  color:var(--ink); text-decoration:none; font-size:13px;
+}
+.branch-candidates-cta .bc-arrow{ font-family:var(--font-mono); color:var(--ink-faint); flex-shrink:0; }
+@media (max-width:720px){
+  .desktop-only-table{ display:none; }
+  .mobile-only{ display:block; }
+  .branch-candidates-cta{ display:flex; }
+}
 </style>
 
 <!-- Google tag (gtag.js) -->
@@ -711,9 +727,8 @@ const RAW_DATA = {"metadata": {"source_document": "all_placements_26_batch.pdf +
     } else {
       renderOverview();
     }
-    window.scrollTo(0,0);
   }
-  window.addEventListener("hashchange", route);
+  window.addEventListener("hashchange", () => { route(); window.scrollTo(0,0); });
 
   /* ---------------------------------------------------------
      SHARED WIDGETS
@@ -1145,7 +1160,7 @@ const RAW_DATA = {"metadata": {"source_document": "all_placements_26_batch.pdf +
           <div class="section-title">${b.branch} Candidates</div>
           <div class="section-note">${b.candidates.length} records</div>
         </div>
-        <div class="table-wrap">
+        <div class="table-wrap desktop-only-table">
           <table class="card-table">
             <thead><tr><th>Candidate</th><th>Roll No.</th><th>Company</th><th>Role</th><th class="num">CTC</th><th>Date</th></tr></thead>
             <tbody>
@@ -1161,8 +1176,17 @@ const RAW_DATA = {"metadata": {"source_document": "all_placements_26_batch.pdf +
             </tbody>
           </table>
         </div>
+        <a class="branch-candidates-cta" id="branch-view-all-candidates" href="#candidates">
+          <span>View all ${b.candidates.length} ${b.branch} candidates by name, company &amp; CTC</span>
+          <span class="bc-arrow">→</span>
+        </a>
       </div>
     `;
+
+    const branchCta = document.getElementById("branch-view-all-candidates");
+    if(branchCta){
+      branchCta.addEventListener("click", () => { state.candidateSearch = b.branch; });
+    }
 
     drawDonutChart(document.getElementById("branch-role-donut"), b.roleRanking.slice(0,6), {size:180, stroke:26});
 
@@ -1680,7 +1704,26 @@ const RAW_DATA = {"metadata": {"source_document": "all_placements_26_batch.pdf +
   document.getElementById("tb-ctc").textContent = "₹"+HIGHEST_CTC.toFixed(1)+"L";
 
   route();
-  window.addEventListener("resize", () => { route(); });
+
+  // Re-render charts/layout on real resizes (e.g. rotating the phone or
+  // resizing a desktop window) without disturbing scroll position. We
+  // deliberately do NOT run this on every 'resize' event: on mobile,
+  // scrolling shows/hides the browser's address bar, which fires
+  // 'resize' continuously even though the viewport WIDTH hasn't changed.
+  // Re-rendering on those events was rebuilding the page mid-scroll and
+  // snapping it back to the top. Only width changes (and a short debounce)
+  // trigger a re-render here, and route() no longer touches scroll at all.
+  let lastWidth = window.innerWidth;
+  let resizeTimer = null;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      if(window.innerWidth !== lastWidth){
+        lastWidth = window.innerWidth;
+        route();
+      }
+    }, 150);
+  });
 })();
 
 </script>
