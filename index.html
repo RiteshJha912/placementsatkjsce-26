@@ -297,9 +297,20 @@ select.filter{
 
 /* ===================== FOOTER ===================== */
 footer{ border-top:1px solid var(--line); padding:20px 28px; max-width:1400px; margin:0 auto; width:100%; }
-.footer-inner{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; font-size:11px; color:var(--ink-faint); font-family:var(--font-mono); align-items:center; }
+.footer-inner{ display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px; font-size:11px; color:var(--ink-faint); font-family:var(--font-mono); align-items:center; }
+.footer-left{ display:flex; flex-direction:column; gap:4px; }
+.footer-credit{ color:var(--ink-soft); }
+.footer-heart{ color:var(--accent); display:inline-block; }
 .footer-link{ color:var(--ink-soft); font-weight:600; border-bottom:1px solid var(--line-soft); transition:color .12s ease, border-color .12s ease; }
 .footer-link:hover{ color:var(--accent); border-color:var(--accent); }
+.footer-source-btn{
+  display:inline-flex; align-items:center; gap:7px; flex-shrink:0;
+  padding:7px 12px; border:1px solid var(--line-soft); background:var(--surface);
+  color:var(--ink); font-family:var(--font-mono); font-size:11px; font-weight:600;
+  text-decoration:none; transition:border-color .12s ease, color .12s ease, background .12s ease;
+}
+.footer-source-btn:hover{ border-color:var(--accent); color:var(--accent); background:var(--accent-soft); }
+.footer-source-btn svg{ flex-shrink:0; }
 
 /* ===================== RESPONSIVE ===================== */
 @media (max-width:720px){
@@ -321,6 +332,9 @@ footer{ border-top:1px solid var(--line); padding:20px 28px; max-width:1400px; m
   .section-head{ margin-bottom:12px; }
   .hero{ padding-top:24px; }
   .hero-sub{ margin-bottom:20px; }
+
+  .footer-inner{ flex-direction:column; align-items:flex-start; gap:12px; }
+  .footer-source-btn{ align-self:flex-start; }
 
   /* single-column stat / insight grids so cards have room to breathe */
   .statgrid{ grid-template-columns:1fr 1fr; }
@@ -477,8 +491,14 @@ footer{ border-top:1px solid var(--line); padding:20px 28px; max-width:1400px; m
 
   <footer>
     <div class="footer-inner">
-      <span>KJSSE T&amp;PO ANNOUNCEMENTS · 27-JUL-2025 → 03-AUG-2026 · 100 ANNOUNCEMENTS · 311 CANDIDATE SELECTIONS RECORDED</span>
-      <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="footer-link">Source code ↗</a>
+      <div class="footer-left">
+        <span>KJSSE T&amp;PO ANNOUNCEMENTS · 27-JUL-2025 → 03-AUG-2026 · 100 ANNOUNCEMENTS · 311 CANDIDATE SELECTIONS RECORDED</span>
+        <span class="footer-credit">Made with <span class="footer-heart">♥</span> by Ritzardous</span>
+      </div>
+      <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="footer-source-btn">
+        <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+        <span>Source code</span>
+      </a>
     </div>
   </footer>
 </div>
@@ -774,7 +794,7 @@ const RAW_DATA = {"metadata": {"source_document": "all_placements_26_batch.pdf +
       <section class="hero">
         <div class="eyebrow">AY 2025–26 · ${TOTAL_ANNOUNCEMENTS} TPO ANNOUNCEMENTS</div>
         <div class="hero-title">Placement Stats<br/>@ KJSCE '26</div>
-        <div class="hero-sub">A structured read of the KJSCE T&amp;PO announcement history : every confirmed hire, CTC and role, organized for placement season decision-making.</div>
+        <div class="hero-sub">A structured read of the KJSCE T&amp;PO announcement history — every confirmed hire, CTC and role, organized for placement season decision-making.</div>
       </section>
 
       <div class="statgrid">
