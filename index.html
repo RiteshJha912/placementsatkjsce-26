@@ -473,6 +473,7 @@ footer{ border-top:1px solid var(--line); padding:20px 28px; max-width:1400px; m
       </div>
       <div class="topbar-meta">
         <div class="topbar-stat"><div class="v" id="tb-count">—</div><div class="l">Confirmed</div></div>
+        <div class="topbar-stat"><div class="v" id="tb-rate">—</div><div class="l">Of B.Tech Placed</div></div>
         <div class="topbar-stat"><div class="v" id="tb-cos">—</div><div class="l">Companies</div></div>
         <div class="topbar-stat"><div class="v" id="tb-ctc">—</div><div class="l">Top CTC</div></div>
       </div>
@@ -659,6 +660,11 @@ const RAW_DATA = {"metadata": {"source_document": "all_placements_26_batch.pdf +
   COMPANIES.forEach(c => typeCounts.set(c.type, (typeCounts.get(c.type)||0) + 1));
   const TYPE_RANKING = Array.from(typeCounts.entries()).sort((a,b)=>b[1]-a[1]);
 
+  // B.Tech registration base (from T&PO director's mail dated 19-Sep-2025, shared to CSI;
+  // AY 2025-26 season: 605 total registered = 524 B.Tech + 81 M.Tech. This site only
+  // covers B.Tech candidates, so only the B.Tech figure is used as the registration base below.
+  const BTECH_REGISTERED = 524;
+
   // Headline metrics
   const CONFIRMED_PLACEMENTS = Math.max(...PLACEMENTS.map(p => p.hiring.placement_count || 0));
   const TOTAL_ANNOUNCEMENTS = PLACEMENTS.length;
@@ -671,6 +677,8 @@ const RAW_DATA = {"metadata": {"source_document": "all_placements_26_batch.pdf +
   const MEDIAN_CTC = sortedCtc.length % 2 === 0
     ? (sortedCtc[sortedCtc.length/2 - 1] + sortedCtc[sortedCtc.length/2]) / 2
     : sortedCtc[(sortedCtc.length-1)/2];
+  const PLACEMENT_RATE = (UNIQUE_STUDENTS_PLACED / BTECH_REGISTERED) * 100;
+  const UNPLACED_ESTIMATE = Math.max(BTECH_REGISTERED - UNIQUE_STUDENTS_PLACED, 0);
   const TOP_HIRER = [...COMPANIES].sort((a,b)=>b.totalHired - a.totalHired)[0];
   const sortedByDateDesc = [...PLACEMENTS].sort((a,b)=> b.result.declared_date.localeCompare(a.result.declared_date));
   const MOST_RECENT = sortedByDateDesc[0];
@@ -798,7 +806,10 @@ const RAW_DATA = {"metadata": {"source_document": "all_placements_26_batch.pdf +
       </section>
 
       <div class="statgrid">
-        ${statBlock(CONFIRMED_PLACEMENTS, "Confirmed cumulative placements", "TPO running counter · latest confirmed", true)}
+        ${statBlock(BTECH_REGISTERED, "B.Tech students registered", "AY 2025-26 · T&PO director's mail, 19 Sep 2025", true)}
+        ${statBlock(UNIQUE_STUDENTS_PLACED, "Unique B.Tech students placed", UNPLACED_ESTIMATE + " still not yet placed", true)}
+        ${statBlock(PLACEMENT_RATE.toFixed(1)+"%", "Placement rate", "of "+BTECH_REGISTERED+" registered B.Tech students", true)}
+        ${statBlock(CONFIRMED_PLACEMENTS, "Confirmed cumulative placements", "TPO running counter · latest confirmed")}
         ${statBlock(TOTAL_ANNOUNCEMENTS, "Placement announcements", "27 Jul 2025 → " + fmtDateShort(MOST_RECENT.result.declared_date))}
         ${statBlock(TOTAL_SELECTIONS, "Candidate selections recorded", "across all announcements · not unique students")}
         ${statBlock(TOTAL_COMPANIES, "Companies represented", TYPE_RANKING.length + " company types")}
@@ -806,6 +817,9 @@ const RAW_DATA = {"metadata": {"source_document": "all_placements_26_batch.pdf +
         ${statBlock("₹"+AVG_CTC.toFixed(2)+"L", "Average CTC", "across "+ctcValsAll.length+" valued announcements")}
         ${statBlock(TOP_HIRER.name, "Most hiring company", TOP_HIRER.totalHired + " students hired")}
         ${statBlock(fmtDateShort(MOST_RECENT.result.declared_date), "Most recent result", MOST_RECENT.company.name)}
+      </div>
+      <div class="stat-extra" style="margin-top:10px; color:var(--ink-faint); font-size:11px; font-family:var(--font-mono);">
+        Registration figure covers B.Tech only (524 of 605 total registrants; the remaining 81 are M.Tech and out of scope for this site). Placement rate is calculated on unique students, not selection count, and reflects confirmed T&amp;PO announcements only — students placed off-campus or without an announcement are not counted.
       </div>
 
       <section class="section">
@@ -1069,7 +1083,7 @@ const RAW_DATA = {"metadata": {"source_document": "all_placements_26_batch.pdf +
       <section class="section" style="padding-top:28px;">
         <div class="section-head">
           <div class="section-title">Branch Intelligence</div>
-          <div class="section-note">${CANDIDATES.length} selections recorded · ${UNIQUE_STUDENTS_PLACED} unique students${MULTI_SELECTED_STUDENTS ? ` (${MULTI_SELECTED_STUDENTS} students selected more than once and appear twice)` : ""}</div>
+          <div class="section-note">${CANDIDATES.length} selections recorded · ${UNIQUE_STUDENTS_PLACED} unique students${MULTI_SELECTED_STUDENTS ? ` (${MULTI_SELECTED_STUDENTS} students selected more than once and appear twice)` : ""} · ${PLACEMENT_RATE.toFixed(1)}% of ${BTECH_REGISTERED} registered B.Tech students</div>
         </div>
 
         <div class="table-wrap">
@@ -1597,6 +1611,16 @@ const RAW_DATA = {"metadata": {"source_document": "all_placements_26_batch.pdf +
         </div>
         <div class="insight-grid">
           <div class="insight-card">
+            <div class="ic-label">Placement rate</div>
+            <div class="ic-value">${PLACEMENT_RATE.toFixed(1)}%</div>
+            <div class="ic-detail">${UNIQUE_STUDENTS_PLACED} of ${BTECH_REGISTERED} registered B.Tech students placed</div>
+          </div>
+          <div class="insight-card">
+            <div class="ic-label">B.Tech students yet to be placed</div>
+            <div class="ic-value">${UNPLACED_ESTIMATE}</div>
+            <div class="ic-detail">${(100-PLACEMENT_RATE).toFixed(1)}% of ${BTECH_REGISTERED} registered, based on confirmed announcements to date</div>
+          </div>
+          <div class="insight-card">
             <div class="ic-label">Highest CTC offered</div>
             <div class="ic-value">₹${HIGHEST_CTC.toFixed(2)}L</div>
             <div class="ic-detail">${HIGHEST_CTC_ANNOUNCEMENT.company.name} · ${HIGHEST_CTC_ANNOUNCEMENT.roles.join(", ")}</div>
@@ -1720,6 +1744,7 @@ const RAW_DATA = {"metadata": {"source_document": "all_placements_26_batch.pdf +
      TOPBAR + INIT
   --------------------------------------------------------- */
   document.getElementById("tb-count").textContent = CONFIRMED_PLACEMENTS;
+  document.getElementById("tb-rate").textContent = PLACEMENT_RATE.toFixed(1)+"%";
   document.getElementById("tb-cos").textContent = TOTAL_COMPANIES;
   document.getElementById("tb-ctc").textContent = "₹"+HIGHEST_CTC.toFixed(1)+"L";
 
